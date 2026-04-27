@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Juvenile Justice & Mental Health</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#050816;
+  color:white;
+  overflow-x:hidden;
+  scroll-behavior:smooth;
+}
+
+/* PARTICLES */
+#particles {
+  position:fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  z-index:-1;
+}
+
+/* SCREENS */
+section {
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  scroll-snap-align:start;
+}
+
+/* GLASS CARD */
+.card {
+  width:80%;
+  max-width:900px;
+  padding:30px;
+  background:rgba(255,255,255,0.08);
+  border-radius:20px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 0 40px rgba(0,0,0,0.5);
+  opacity:0;
+  transform:translateY(40px);
+  transition:1s ease;
+}
+
+.card.show {
+  opacity:1;
+  transform:translateY(0);
+}
+
+h1,h2 { color:#38bdf8; }
+
+img {
+  width:100%;
+  border-radius:15px;
+  margin-top:10px;
+}
+
+/* NAV BUTTONS */
+.nav {
+  position:fixed;
+  bottom:20px;
+  right:20px;
+  display:flex;
+  gap:10px;
+}
+
+button {
+  padding:10px 15px;
+  border:none;
+  border-radius:10px;
+  background:#38bdf8;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+/* progress dots */
+.dots {
+  position:fixed;
+  right:15px;
+  top:50%;
+  transform:translateY(-50%);
+}
+.dot {
+  width:10px;
+  height:10px;
+  background:#555;
+  border-radius:50%;
+  margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="particles"></canvas>
+
+<div class="nav">
+<button onclick="prev()">⬅</button>
+<button onclick="next()">➡</button>
+</div>
+
+<div class="dots">
+<div class="dot"></div><div class="dot"></div><div class="dot"></div>
+<div class="dot"></div><div class="dot"></div><div class="dot"></div>
+</div>
+
+<!-- SLIDE 1 -->
+<section><div class="card">
+<h1>Juvenile Justice & Mental Health</h1>
+<p>San Juan County, New Mexico</p>
+</div></section>
+
+<!-- SLIDE 2 -->
+<section><div class="card">
+<h2>San Juan County</h2>
+<p>Rural region, includes Navajo Nation. Limited resources and high poverty.</p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/New_Mexico_in_United_States.svg/800px-New_Mexico_in_United_States.svg.png">
+</div></section>
+
+<!-- SLIDE 3 -->
+<section><div class="card">
+<h2>Poverty Rate</h2>
+<canvas id="chart1"></canvas>
+</div></section>
+
+<!-- SLIDE 4 -->
+<section><div class="card">
+<h2>Brain Development</h2>
+<p>Stress affects prefrontal cortex, hippocampus, amygdala.</p>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Brain_lobes.svg/800px-Brain_lobes.svg.png">
+</div></section>
+
+<!-- SLIDE 5 -->
+<section><div class="card">
+<h2>Mental Health Risk</h2>
+<canvas id="chart2"></canvas>
+</div></section>
+
+<!-- SLIDE 6 -->
+<section><div class="card">
+<h2>Conclusion</h2>
+<p>Poverty → Stress → Brain changes → Juvenile justice involvement</p>
+</div></section>
+
+<script>
+/* ---------- ANIMATION OBSERVER ---------- */
+const cards = document.querySelectorAll('.card');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('show');
+  });
+},{threshold:0.3});
+
+cards.forEach(c=>obs.observe(c));
+
+/* ---------- NAVIGATION ---------- */
+let i = 0;
+const secs = document.querySelectorAll('section');
+
+function go(n){
+  secs[n].scrollIntoView({behavior:'smooth'});
+}
+
+function next(){ i=Math.min(i+1,secs.length-1); go(i); }
+function prev(){ i=Math.max(i-1,0); go(i); }
+
+/* ---------- CHARTS ---------- */
+new Chart(document.getElementById('chart1'), {
+  type:'bar',
+  data:{
+    labels:['San Juan County','US Average'],
+    datasets:[{
+      label:'Poverty %',
+      data:[20,12]
+    }]
+  }
+});
+
+new Chart(document.getElementById('chart2'), {
+  type:'bar',
+  data:{
+    labels:['Justice Youth','General Youth'],
+    datasets:[{
+      label:'Mental Health Risk',
+      data:[85,25]
+    }]
+  }
+});
+
+/* ---------- PARTICLES ---------- */
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+let p = Array.from({length:80}, ()=>({
+  x:Math.random()*canvas.width,
+  y:Math.random()*canvas.height,
+  r:Math.random()*2+1,
+  dx:(Math.random()-0.5),
+  dy:(Math.random()-0.5)
+}));
+
+function draw(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  p.forEach(i=>{
+    i.x+=i.dx;
+    i.y+=i.dy;
+    if(i.x<0||i.x>canvas.width)i.dx*=-1;
+    if(i.y<0||i.y>canvas.height)i.dy*=-1;
+
+    ctx.beginPath();
+    ctx.arc(i.x,i.y,i.r,0,Math.PI*2);
+    ctx.fillStyle="rgba(56,189,248,0.7)";
+    ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+
+</body>
+</html>
